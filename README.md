@@ -15,7 +15,7 @@
 
 ### 1.2. Cài đặt thư viện
 Có thể cài trực tiếp vào global environment hoặc dùng virtual environment.  
-Với VS Code xem thêm hướng dẫn ở [đây](https://code.visualstudio.com/docs/python/python-tutorial).    
+Với VS Code xem thêm hướng dẫn ở [đây](https://code.visualstudio.com/docs/python/python-tutorial#_install-and-use-packages).    
 Tiến hành cài đặt: 
 - Cài các thư viện trong requirements.txt: 
 ```bash
@@ -25,8 +25,9 @@ pip install -r requirements.txt
 Tìm và sửa file ```label_map_util.py``` (đường dẫn có trong thông báo lỗi): sửa ```tf.gfile.GFile``` thành ```tf.io.gfile.GFile```
 
 
-Hoặc tải trực tiếp folder ```.venv``` tại đây và thêm vào project: (hướng dẫn bên dưới dành cho VS Code)
-- Dùng virtual environment
+Hoặc tải trực tiếp folder ```.venv``` tại [đây](https://drive.google.com/file/d/1ruM0_h4wbADF-029CosUpzho6rvf8Vq3/view?usp=sharing)
+- Thêm vào project  
+- Dùng virtual environment (hướng dẫn bên dưới dành cho VS Code)  
 ```bash
 .venv\scripts\activate
 ```
