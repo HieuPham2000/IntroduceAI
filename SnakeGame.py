@@ -72,12 +72,16 @@ def runGame():
 				# Nếu đang đi sang phải thì KHÔNG cho phép chuyển hướng sang trái
 				if (event.key == K_LEFT or event.key == K_a) and direction != RIGHT:
 					direction = LEFT
+					break
 				elif (event.key == K_RIGHT or event.key == K_d) and direction != LEFT:
 					direction = RIGHT
+					break
 				elif (event.key == K_UP or event.key == K_w) and direction != DOWN:
 					direction = UP
+					break
 				elif (event.key == K_DOWN or event.key == K_s) and direction != UP:
 					direction = DOWN
+					break
 				elif event.key == K_ESCAPE:
 					#terminate()
 					return
@@ -89,18 +93,18 @@ def runGame():
 			drawSnakeDie(snakeCoords)
 			drawGameOver(WINDOWWIDTH/2, 30, 100, WHITE)
 			pygame.display.update()
-			time.sleep(4)
+			time.sleep(2)
 			return
 		# Kiểm tra khi chạm vào táo
 		if snakeCoords[HEAD] == food[1]:
-			time.sleep(0.2)
+			time.sleep(0.1)
 			APPLEEATSOUND.play()
 			food = getRandomFood()
 			drawFood(*food)
 			score += 10
 		# test 2 táo
 		elif snakeCoords[HEAD] == food2[1]:
-			time.sleep(0.2)
+			time.sleep(0.1)
 			APPLEEATSOUND.play()
 			food2 = getRandomFood()
 			drawFood(*food2)
@@ -144,7 +148,7 @@ def runGame():
 
 		# draw Snake sau food để khi ăn food thì đầu rắn sẽ che food
 		#debug khi đi xuyên tường
-		print(snakeCoords[HEAD])
+		#print(snakeCoords[HEAD])
 		drawSnake(snakeCoords)
 		drawScore(score, colorScore)
 		drawBestScore(bestScore)
