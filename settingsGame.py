@@ -5,12 +5,13 @@ pygame.init()
 pygame.mixer.init()
 pygame.font.init()
 
-FPS = 1
+FPS = 2
 WINDOWWIDTH = 800
 WINDOWHEIGHT = 600
 CELLSIZE = 50
 assert WINDOWHEIGHT % CELLSIZE == 0, "Height phai la boi so cua Cell Size"
 assert WINDOWWIDTH % CELLSIZE == 0, "Width phai la boi so cua Cell Size"
+
 CELLWIDTH = int(WINDOWWIDTH / CELLSIZE)
 CELLHEIGHT = int(WINDOWHEIGHT / CELLSIZE)
 
@@ -28,7 +29,7 @@ VIOLET   = (128,   0, 128)
 # Thêm 1 số màu
 RED2 	 = (224,  62,  30)
 GREEN1   = (208, 240, 208)
-GREEN2   = (60, 95, 74)  
+GREEN2   = (60,   95,  74)  
 
 BGCOLOR          = BLACK
 TITLE_COLOR      = DARKGREEN

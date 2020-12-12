@@ -9,6 +9,7 @@ import time
 
 # biến global
 snakeCoords = None
+oldBestScore = None
 bestScore = None
 score = None
 colorScore = None
@@ -21,7 +22,7 @@ background_image = pygame.transform.scale(background_image, (WINDOWWIDTH, WINDOW
 
 def main():
 	global CLOCK, SCREEN, FONT
-
+	
 	pygame.init()
 	CLOCK = pygame.time.Clock()
 	SCREEN = pygame.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT))
@@ -39,11 +40,15 @@ def main():
 
 def runGame():
 	with open('bestscore.txt') as log:
-		global bestScore
+		global bestScore, oldBestScore
 		bestScore = int(log.read())
-		print(bestScore)
+		oldBestScore = bestScore
+		#print(bestScore)
 
-	global colorScore
+	# Màu score in trên màn hinh
+	#Lưu điểm
+	global score, colorScore
+	score = 0
 	colorScore = WHITE
 	# Khởi tạo vị trí ban đầu 
 	startx = random.randint(3, CELLWIDTH - 3)
@@ -55,12 +60,10 @@ def runGame():
 	# Random vị trí táo, hiện tai đang để 2 táo
 	food = getRandomFood()
 	food2 = getRandomFood()
-	#Lưu điểm
-	global score
-	score = 0
+	
 
 	while True:
-		print(snakeCoords[HEAD])
+		
 		for event in pygame.event.get():
 			if event.type == QUIT:
 				terminate()
@@ -80,54 +83,51 @@ def runGame():
 					return
 				elif event.key == KSCAN_Q or event.key == K_q:
 					terminate()
-		# Phát hiện va chạm
-		# Kiểm tra va chạm với cạnh => đi xuyên cạnh
-		if snakeCoords[HEAD]['x'] == -1 or snakeCoords[HEAD]['x'] == CELLWIDTH or snakeCoords[HEAD]['y'] == -1 or snakeCoords[HEAD]['y'] == CELLHEIGHT:
-			# snakeCoords[HEAD]['x'] = -1 => cộng thêm CELLWIDTH = CELLWIDTH - 1 <=> (-1 + CELLWIDTH) % CELLWIDTH
+			
+		# Kiểm tra va chạm với thân rắn
+		if snakeCoords[HEAD] in snakeCoords[1:]:
+			drawSnakeDie(snakeCoords)
+			drawGameOver(WINDOWWIDTH/2, 30, 100, WHITE)
+			pygame.display.update()
+			time.sleep(4)
+			return
+		# Kiểm tra khi chạm vào táo
+		if snakeCoords[HEAD] == food[1]:
+			time.sleep(0.2)
+			APPLEEATSOUND.play()
+			food = getRandomFood()
+			drawFood(*food)
+			score += 10
+		# test 2 táo
+		elif snakeCoords[HEAD] == food2[1]:
+			time.sleep(0.2)
+			APPLEEATSOUND.play()
+			food2 = getRandomFood()
+			drawFood(*food2)
+			score += 10
+		else:
+			# Bỏ đi khối ở cuối thân rắn
+			# Vì ngay bên dưới ta sẽ chèn khối mới vào đầu rắn => tạo sự di chuyển
+			del snakeCoords[-1]
+
+		# Di chuyển rắn
+		if direction == UP:
+			newHead = {'x': snakeCoords[HEAD]['x'], 'y': snakeCoords[HEAD]['y'] - 1}
+		elif direction == DOWN:
+			newHead = {'x': snakeCoords[HEAD]['x'], 'y': snakeCoords[HEAD]['y'] + 1}
+		elif direction == RIGHT:
+			newHead = {'x': snakeCoords[HEAD]['x'] + 1, 'y': snakeCoords[HEAD]['y']}
+		elif direction == LEFT:
+			newHead = {'x': snakeCoords[HEAD]['x'] - 1, 'y': snakeCoords[HEAD]['y']}
+		# fix lỗi đi quá 1 bước khi đi qua cạnh
+		if newHead['x'] == -1 or newHead['x'] == CELLWIDTH or newHead['y'] == -1 or newHead['y'] == CELLHEIGHT:
+			# snakeCoords[HEAD]['x'] = -1 =>  cộng thêm CELLWIDTH = CELLWIDTH - 1 <=> (-1 + CELLWIDTH) % CELLWIDTH
 			# snakeCoords[HEAD]['x'] = CELLWIDTH => trừ đi CELLWIDTH = 0 <=> (CELLWIDTH + CELLWIDTH) % CELLWIDTH
 			# snakeCoords[HEAD]['x'] = x mà -1 < x < CELLWIDTH thì (x + CELLWIDTH) % CELLWIDTH vẫn = x
-			x = (snakeCoords[HEAD]['x'] + CELLWIDTH) % CELLWIDTH
-			y = (snakeCoords[HEAD]['y'] + CELLHEIGHT) % CELLHEIGHT
+			x = (newHead['x'] + CELLWIDTH) % (CELLWIDTH)
+			y = (newHead['y'] + CELLHEIGHT) % (CELLHEIGHT)
 			newHead = {'x': x, 'y': y}
-			snakeCoords.insert(0, newHead)
-			del snakeCoords[-1]
-		else:	
-			# Kiểm tra va chạm với thân rắn
-			if snakeCoords[HEAD] in snakeCoords[1:]:
-				drawSnakeDie(snakeCoords)
-				drawGameOver(WINDOWWIDTH/2, 30, 100, WHITE)
-				pygame.display.update()
-				time.sleep(4)
-				return
-			# Kiểm tra khi chạm vào táo
-			if snakeCoords[HEAD] == food[1]:
-				time.sleep(0.2)
-				APPLEEATSOUND.play()
-				food = getRandomFood()
-				drawFood(*food)
-				score += 10
-			# test 2 táo
-			elif snakeCoords[HEAD] == food2[1]:
-				time.sleep(0.2)
-				APPLEEATSOUND.play()
-				food2 = getRandomFood()
-				drawFood(*food2)
-				score += 10
-			else:
-				# Bỏ đi khối ở cuối thân rắn
-				# Vì ngay bên dưới ta sẽ chèn khối mới vào đầu rắn => tạo sự di chuyển
-				del snakeCoords[-1]
-
-			# Di chuyển rắn
-			if direction == UP:
-				newHead = {'x': snakeCoords[HEAD]['x'], 'y': snakeCoords[HEAD]['y'] - 1}
-			elif direction == DOWN:
-				newHead = {'x': snakeCoords[HEAD]['x'], 'y': snakeCoords[HEAD]['y'] + 1}
-			elif direction == RIGHT:
-				newHead = {'x': snakeCoords[HEAD]['x'] + 1, 'y': snakeCoords[HEAD]['y']}
-			elif direction == LEFT:
-				newHead = {'x': snakeCoords[HEAD]['x'] - 1, 'y': snakeCoords[HEAD]['y']}
-			snakeCoords.insert(0, newHead)
+		snakeCoords.insert(0, newHead)
 
 		# Vẽ màn hình
 		if(score > bestScore):
@@ -143,6 +143,8 @@ def runGame():
 		drawFood(*food2)
 
 		# draw Snake sau food để khi ăn food thì đầu rắn sẽ che food
+		#debug khi đi xuyên tường
+		print(snakeCoords[HEAD])
 		drawSnake(snakeCoords)
 		drawScore(score, colorScore)
 		drawBestScore(bestScore)
@@ -209,7 +211,7 @@ def showGameOverScreen():
 	SCREEN.fill(BGCOLOR)
 
 	totalscoreFont = pygame.font.Font('freesansbold.ttf', 40)
-	if(score==bestScore):
+	if(score > oldBestScore):
 		totalscoreText = totalscoreFont.render('High Score: %s' % (score), True, GREEN)
 	else:
 		totalscoreText = totalscoreFont.render('Your Score: %s' % (score), True, WHITE)
