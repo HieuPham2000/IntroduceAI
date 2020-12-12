@@ -5,7 +5,7 @@ pygame.init()
 pygame.mixer.init()
 pygame.font.init()
 
-FPS = 3
+FPS = 1
 WINDOWWIDTH = 800
 WINDOWHEIGHT = 600
 CELLSIZE = 50
@@ -27,18 +27,15 @@ YELLOW   = (255, 255,   0)
 VIOLET   = (128,   0, 128)
 # Thêm 1 số màu
 RED2 	 = (224,  62,  30)
-YELLOW2  = (254, 209,  48)
-GREEN2   = (102, 204,   0)
-DARKGREEN2=(4,   155,  75)
-AQUA     = (7,   124, 219)
-BLUE2    = (35,  100, 198)  
+GREEN1   = (208, 240, 208)
+GREEN2   = (60, 95, 74)  
 
 BGCOLOR          = BLACK
 TITLE_COLOR      = DARKGREEN
 LINE_GRID_COLOR  = DARKGRAY
 APPLE_COLOR      = RED2
-HEAD_SNAKE_COLOR = AQUA
-SNAKE_COLOR      = BLUE2
+HEAD_SNAKE_COLOR = GREEN1
+SNAKE_COLOR      = GREEN2
 
 
 # Phím điều khiển

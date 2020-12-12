@@ -81,7 +81,7 @@ def play():
                 # Display output
                 image_message = image_np
                 # Test resize
-                cv2.imshow('Gesture Detection', cv2.resize(image_np, (800, 600)))
+                cv2.imshow('Gesture Detection', cv2.resize(image_np, (500, 500)))
                 if cv2.waitKey(25) & 0xFF == ord('q'):
                     cv2.destroyAllWindows()
                     break

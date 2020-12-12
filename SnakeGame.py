@@ -5,6 +5,7 @@ from pygame.locals import *
 from settingsGame import *
 from threading import Thread
 from detection import play
+import time
 
 # biến global
 snakeCoords = None
@@ -45,8 +46,8 @@ def runGame():
 	global colorScore
 	colorScore = WHITE
 	# Khởi tạo vị trí ban đầu 
-	startx = random.randint(5, CELLWIDTH - 6)
-	starty = random.randint(5, CELLHEIGHT - 6)
+	startx = random.randint(3, CELLWIDTH - 3)
+	starty = random.randint(3, CELLHEIGHT - 3)
 	# Danh sách vị trí các khối tạo nên con rắn, khởi tạo với 3 khối
 	global snakeCoords
 	snakeCoords = [{'x' : startx, 'y' : starty}, {'x': startx - 1, 'y':starty},  {'x': startx - 2, 'y':starty}]
@@ -59,6 +60,7 @@ def runGame():
 	score = 0
 
 	while True:
+		print(snakeCoords[HEAD])
 		for event in pygame.event.get():
 			if event.type == QUIT:
 				terminate()
@@ -92,15 +94,21 @@ def runGame():
 		else:	
 			# Kiểm tra va chạm với thân rắn
 			if snakeCoords[HEAD] in snakeCoords[1:]:
+				drawSnakeDie(snakeCoords)
+				drawGameOver(WINDOWWIDTH/2, 30, 100, WHITE)
+				pygame.display.update()
+				time.sleep(4)
 				return
 			# Kiểm tra khi chạm vào táo
 			if snakeCoords[HEAD] == food[1]:
+				time.sleep(0.2)
 				APPLEEATSOUND.play()
 				food = getRandomFood()
 				drawFood(*food)
 				score += 10
 			# test 2 táo
 			elif snakeCoords[HEAD] == food2[1]:
+				time.sleep(0.2)
 				APPLEEATSOUND.play()
 				food2 = getRandomFood()
 				drawFood(*food2)
@@ -129,11 +137,13 @@ def runGame():
 
 		SCREEN.fill(BGCOLOR)
 		drawGrid()
-		drawSnake(snakeCoords)
+		
 
 		drawFood(*food)
 		drawFood(*food2)
 
+		# draw Snake sau food để khi ăn food thì đầu rắn sẽ che food
+		drawSnake(snakeCoords)
 		drawScore(score, colorScore)
 		drawBestScore(bestScore)
 		pygame.display.update()
@@ -145,19 +155,25 @@ def drawPressKeyMsg():
 	pressKeyRect.center = (WINDOWWIDTH - 200, WINDOWHEIGHT - 100)
 	SCREEN.blit(pressKeyText, pressKeyRect)
 
+def drawGameOver(x, y, size, color):
+	gameOverFont = pygame.font.Font('freesansbold.ttf', size)
+	gameOverText = gameOverFont.render('Game Over', True, color)
+	gameOverRect = gameOverText.get_rect()
+	gameOverRect.midtop = (x, y)
+	SCREEN.blit(gameOverText, gameOverRect)
+
 def checkForKeyPress():
 	if len(pygame.event.get(QUIT)) > 0:
 		terminate()
 	keyUpEvents = pygame.event.get(KEYUP)
 	if len(keyUpEvents) == 0:
 		return None
-	if keyUpEvents[0].key == K_ESCAPE:
+	if keyUpEvents[0].key in (K_q, KSCAN_Q):
 		terminate()
 	return keyUpEvents[0].key
 
 
 def showStartScreen():
-	
 	titlefont = pygame.font.Font('freesansbold.ttf', 100)
 	titleText = titlefont.render('SNAKE GAME', True, TITLE_COLOR)
 	while True:
@@ -192,10 +208,6 @@ def showGameOverScreen():
 
 	SCREEN.fill(BGCOLOR)
 
-	gameOverFont = pygame.font.Font('freesansbold.ttf', 100)
-	gameOverText = gameOverFont.render('Game Over', True, WHITE)
-	gameOverRect = gameOverText.get_rect()
-
 	totalscoreFont = pygame.font.Font('freesansbold.ttf', 40)
 	if(score==bestScore):
 		totalscoreText = totalscoreFont.render('High Score: %s' % (score), True, GREEN)
@@ -208,12 +220,9 @@ def showGameOverScreen():
 		SCREEN.blit(bestscoreText, bestscoreRect)
 
 	totalscoreRect = totalscoreText.get_rect()
-
 	totalscoreRect.midtop = (WINDOWWIDTH/2, 150)
-	gameOverRect.midtop = (WINDOWWIDTH/2, 30)
 
-	
-	SCREEN.blit(gameOverText, gameOverRect)
+	drawGameOver(WINDOWWIDTH/2, 30, 100, WHITE)
 	SCREEN.blit(totalscoreText, totalscoreRect)
 	drawPressKeyMsg()
 	pygame.display.update()
@@ -238,16 +247,39 @@ def drawBestScore(bestScore):
 	SCREEN.blit(bestScoreText, bestScoreRect)
 
 def drawSnake(snakeCoords):
-	x = snakeCoords[HEAD]['x'] * CELLSIZE
+	""" x = snakeCoords[HEAD]['x'] * CELLSIZE
 	y = snakeCoords[HEAD]['y'] * CELLSIZE
 	snakeHeadRect = pygame.Rect(x, y, CELLSIZE, CELLSIZE)
-	pygame.draw.rect(SCREEN, HEAD_SNAKE_COLOR, snakeHeadRect)
+	pygame.draw.rect(SCREEN, HEAD_SNAKE_COLOR, snakeHeadRect) """
 
 	for coord in snakeCoords[1:]:
 		x = coord['x'] * CELLSIZE
 		y = coord['y'] * CELLSIZE
 		snakeSegmentRect = pygame.Rect(x, y, CELLSIZE, CELLSIZE)
 		pygame.draw.rect(SCREEN, SNAKE_COLOR, snakeSegmentRect)
+
+	x = snakeCoords[HEAD]['x'] * CELLSIZE
+	y = snakeCoords[HEAD]['y'] * CELLSIZE
+	snakeHeadRect = pygame.Rect(x, y, CELLSIZE, CELLSIZE)
+	pygame.draw.rect(SCREEN, HEAD_SNAKE_COLOR, snakeHeadRect)
+
+def drawSnakeDie(snakeCoords):
+	x = snakeCoords[HEAD]['x'] * CELLSIZE
+	y = snakeCoords[HEAD]['y'] * CELLSIZE
+	snakeHeadRect = pygame.Rect(x, y, CELLSIZE, CELLSIZE)
+	pygame.draw.rect(SCREEN, RED, snakeHeadRect)
+	pygame.display.update()
+	time.sleep(0.4)
+
+	for coord in snakeCoords[1:]:
+		x = coord['x'] * CELLSIZE
+		y = coord['y'] * CELLSIZE
+		snakeSegmentRect = pygame.Rect(x, y, CELLSIZE, CELLSIZE)
+		pygame.draw.rect(SCREEN, RED, snakeSegmentRect)
+		time.sleep(0.1)
+		pygame.display.update()
+
+	
 
 def drawFood(image, coord):
 	x = coord['x'] * CELLSIZE
@@ -264,5 +296,5 @@ def drawGrid():
 		pygame.draw.line(SCREEN, LINE_GRID_COLOR, (0, y), (WINDOWWIDTH, y))
 
 if __name__ == '__main__':
-	Thread(target = play).start() 
+	#Thread(target = play).start() 
 	Thread(target = main).start()
