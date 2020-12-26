@@ -3,6 +3,7 @@ import os
 import tensorflow as tf
 import cv2
 import pyautogui
+#import time
 
 from cv2 import CAP_PROP_FPS
 
@@ -25,6 +26,7 @@ def play():
     cap = cv2.VideoCapture(0)
     # test limit fps
     #cap.set(CAP_PROP_FPS, 5)
+    #print("FPS: ", cap.get(CAP_PROP_FPS)) #=> 30
 
 
     # Đọc frozen graph
@@ -46,6 +48,7 @@ def play():
         with tf.compat.v1.Session(graph=detection_graph) as sess:
             while True:
                 # Đọc frame từ camera
+                #start = time.time()
                 ret, image_np = cap.read()
                 # Lật ngược ảnh
                 image_np = np.fliplr(image_np)
@@ -81,35 +84,38 @@ def play():
                 # Display output
                 image_message = image_np
                 # Test resize
-                cv2.imshow('Gesture Detection', cv2.resize(image_np, (500, 500)))
+                cv2.imshow('Gesture Detection', cv2.resize(image_np, (600, 600)))
                 if cv2.waitKey(25) & 0xFF == ord('q'):
                     cv2.destroyAllWindows()
                     break
                 '''MOVE'''
-                # press 'w' if bounding box of finger detected
+
                 objects = np.where(classes[0] == 1)[0]
 
-                # calculate center of box if detection exceeds threshold
+                
                 if len(objects) > 0 and scores[0][objects][0] > 0.8:
                     pyautogui.press('up')
 
                 objects = np.where(classes[0] == 2)[0]
 
-                # calculate center of box if detection exceeds threshold
+                
                 if len(objects) > 0 and scores[0][objects][0] > 0.8:
                     pyautogui.press('down')
 
                 objects = np.where(classes[0] == 3)[0]
 
-                # calculate center of box if detection exceeds threshold
+                
                 if len(objects) > 0 and scores[0][objects][0] > 0.8:
                     pyautogui.press('left')
 
                 objects = np.where(classes[0] == 4)[0]
 
-                # calculate center of box if detection exceeds threshold
+                
                 if len(objects) > 0 and scores[0][objects][0] > 0.8:
                     pyautogui.press('right')
+                #end = time.time()
+                #print(end - start)
+                
 
 if __name__ == '__main__':
 	play()              
